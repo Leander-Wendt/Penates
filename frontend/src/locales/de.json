@@ -1,0 +1,134 @@
+{
+  "app": {
+    "name": "Penates",
+    "skipToContent": "Zum Hauptinhalt springen"
+  },
+  "nav": {
+    "items": "Gegenstände",
+    "loanRequests": "Ausleihanfragen",
+    "users": "Benutzer",
+    "organisations": "Organisationen",
+    "logout": "Abmelden",
+    "language": "Sprache"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "view": "Ansehen",
+    "delete": "Löschen",
+    "close": "Schließen",
+    "search": "Suchen",
+    "loading": "Lädt...",
+    "actions": "Aktionen",
+    "confirm": "Bestätigen",
+    "back": "Zurück",
+    "yes": "Ja",
+    "no": "Nein",
+    "required": "Erforderlich",
+    "noResults": "Keine Ergebnisse gefunden.",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "role": "Rolle",
+    "name": "Name",
+    "description": "Beschreibung",
+    "category": "Kategorie",
+    "location": "Standort",
+    "amount": "Anzahl",
+    "note": "Notiz",
+    "status": "Status",
+    "uploadImage": "Bild hochladen",
+    "removeImage": "Bild entfernen",
+    "changeImage": "Bild ändern"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "notPermitted": "Sie sind nicht berechtigt, diese Aktion auszuführen.",
+    "notFound": "Die gesuchte Seite konnte nicht gefunden werden.",
+    "loginFailed": "Ungültige E-Mail-Adresse oder Passwort."
+  },
+  "roles": {
+    "admin": "Admin",
+    "logistics": "Logistik",
+    "student": "Student:in"
+  },
+  "login": {
+    "title": "Anmelden",
+    "submit": "Anmelden",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort"
+  },
+  "forbidden": {
+    "title": "Nicht erlaubt",
+    "message": "Sie haben keine Berechtigung, diese Seite anzuzeigen.",
+    "backToItems": "Zurück zu den Gegenständen"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "message": "Die gesuchte Seite existiert nicht."
+  },
+  "items": {
+    "title": "Gegenstände",
+    "createButton": "Neuer Gegenstand",
+    "searchPlaceholder": "Gegenstände suchen",
+    "categoryFilterLabel": "Nach Kategorie filtern",
+    "allCategories": "Alle Kategorien",
+    "inventoryNumber": "Inventarnummer",
+    "electricalAppliance": "Elektrogerät",
+    "detailTitle": "Gegenstandsdetails",
+    "editTitle": "Gegenstand bearbeiten",
+    "createTitle": "Neuer Gegenstand",
+    "restrictedSection": "Eingeschränkte Informationen",
+    "manufacturer": "Hersteller",
+    "serialNumber": "Seriennummer",
+    "lastTechnicalInspectionDate": "Letzte technische Prüfung",
+    "lastElectricalInspectionDate": "Letzte Elektroprüfung",
+    "dateOfPurchase": "Kaufdatum",
+    "price": "Preis",
+    "resolutionNumber": "Beschlussnummer",
+    "thumbnailAlt": "Foto von {name}",
+    "noImage": "Kein Bild"
+  },
+  "users": {
+    "title": "Benutzer",
+    "createButton": "Neuer Benutzer",
+    "editTitle": "Benutzer bearbeiten",
+    "createTitle": "Neuer Benutzer",
+    "organisation": "Organisation",
+    "deleteConfirm": "Diesen Benutzer löschen?",
+    "deleteNotPermitted": "Nur Admins können Benutzer löschen.",
+    "generatePassword": "Starkes Passwort generieren",
+    "generatedPasswordHint": "Kopieren Sie dieses Passwort und teilen Sie es dem neuen Benutzer mit – es wird nicht erneut angezeigt."
+  },
+  "organisations": {
+    "title": "Organisationen",
+    "createButton": "Neue Organisation",
+    "editTitle": "Organisation bearbeiten",
+    "createTitle": "Neue Organisation",
+    "deleteConfirm": "Diese Organisation löschen?"
+  },
+  "loanRequests": {
+    "title": "Ausleihanfragen",
+    "createButton": "Neue Ausleihanfrage",
+    "createTitle": "Neue Ausleihanfrage",
+    "detailTitle": "Details der Ausleihanfrage",
+    "dateOfLending": "Ausleihdatum",
+    "dateOfReturn": "Rückgabedatum",
+    "locationOfItems": "Standort der Gegenstände",
+    "itemsLabel": "Gegenstände",
+    "itemPickerLabel": "Gegenstände zum Anfragen auswählen",
+    "requestingUser": "Anfragender Benutzer",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "markReturned": "Als zurückgegeben markieren",
+    "cancel": "Anfrage stornieren",
+    "status": {
+      "pending": "Ausstehend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "returned": "Zurückgegeben",
+      "cancelled": "Storniert"
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "app": {
+    "name": "Penates",
+    "skipToContent": "Skip to main content"
+  },
+  "nav": {
+    "items": "Items",
+    "loanRequests": "Loan Requests",
+    "users": "Users",
+    "organisations": "Organisations",
+    "logout": "Log out",
+    "language": "Language"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "edit": "Edit",
+    "view": "View",
+    "delete": "Delete",
+    "close": "Close",
+    "search": "Search",
+    "loading": "Loading...",
+    "actions": "Actions",
+    "confirm": "Confirm",
+    "back": "Back",
+    "yes": "Yes",
+    "no": "No",
+    "required": "Required",
+    "noResults": "No results found.",
+    "email": "Email",
+    "password": "Password",
+    "role": "Role",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "location": "Location",
+    "amount": "Amount",
+    "note": "Note",
+    "status": "Status",
+    "uploadImage": "Upload image",
+    "removeImage": "Remove image",
+    "changeImage": "Change image"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notPermitted": "You are not permitted to perform this action.",
+    "notFound": "The page you are looking for could not be found.",
+    "loginFailed": "Invalid email or password."
+  },
+  "roles": {
+    "admin": "Admin",
+    "logistics": "Logistics",
+    "student": "Student"
+  },
+  "login": {
+    "title": "Log in",
+    "submit": "Log in",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password"
+  },
+  "forbidden": {
+    "title": "Not permitted",
+    "message": "You do not have permission to view this page.",
+    "backToItems": "Back to items"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "The page you are looking for does not exist."
+  },
+  "items": {
+    "title": "Items",
+    "createButton": "New item",
+    "searchPlaceholder": "Search items",
+    "categoryFilterLabel": "Filter by category",
+    "allCategories": "All categories",
+    "inventoryNumber": "Inventory number",
+    "electricalAppliance": "Electrical appliance",
+    "detailTitle": "Item details",
+    "editTitle": "Edit item",
+    "createTitle": "New item",
+    "restrictedSection": "Restricted information",
+    "manufacturer": "Manufacturer",
+    "serialNumber": "Serial number",
+    "lastTechnicalInspectionDate": "Last technical inspection",
+    "lastElectricalInspectionDate": "Last electrical inspection",
+    "dateOfPurchase": "Date of purchase",
+    "price": "Price",
+    "resolutionNumber": "Resolution number",
+    "thumbnailAlt": "Photo of {name}",
+    "noImage": "No image"
+  },
+  "users": {
+    "title": "Users",
+    "createButton": "New user",
+    "editTitle": "Edit user",
+    "createTitle": "New user",
+    "organisation": "Organisation",
+    "deleteConfirm": "Delete this user?",
+    "deleteNotPermitted": "Only Admins can delete users.",
+    "generatePassword": "Generate strong password",
+    "generatedPasswordHint": "Copy this password and share it with the new user — it won't be shown again."
+  },
+  "organisations": {
+    "title": "Organisations",
+    "createButton": "New organisation",
+    "editTitle": "Edit organisation",
+    "createTitle": "New organisation",
+    "deleteConfirm": "Delete this organisation?"
+  },
+  "loanRequests": {
+    "title": "Loan requests",
+    "createButton": "New loan request",
+    "createTitle": "New loan request",
+    "detailTitle": "Loan request details",
+    "dateOfLending": "Date of lending",
+    "dateOfReturn": "Date of return",
+    "locationOfItems": "Location of items",
+    "itemsLabel": "Items",
+    "itemPickerLabel": "Select items to request",
+    "requestingUser": "Requesting user",
+    "approve": "Approve",
+    "reject": "Reject",
+    "markReturned": "Mark returned",
+    "cancel": "Cancel request",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "returned": "Returned",
+      "cancelled": "Cancelled"
+    }
+  }
+}
