@@ -1,0 +1,9 @@
+bin/
+tmp/
+.env
+.env.local
+coverage.out
+coverage.*
+*.out
+uploads/*
+!uploads/.gitkeep
