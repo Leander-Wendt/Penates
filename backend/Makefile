@@ -1,7 +1,10 @@
-.PHONY: run seed build test test-integration test-cover lint fmt tidy docker-build
+.PHONY: run dev seed build test test-integration test-cover lint fmt tidy docker-build
 
 run:
 	go run ./cmd/server
+
+dev:
+	go run github.com/air-verse/air@latest -c .air.toml
 
 seed:
 	go run ./cmd/server -seed
