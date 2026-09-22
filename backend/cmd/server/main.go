@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
@@ -42,8 +43,14 @@ func main() {
 
 	router := handler.NewRouter(cfg, db)
 
-	log.Printf("Penates backend listening on port %s", cfg.Port)
-	if err := router.Run(":" + cfg.Port); err != nil {
+	if cfg.TLSCertFile != "" && cfg.TLSKeyFile != "" {
+		log.Printf("Penates backend listening on port %s (HTTPS)", cfg.Port)
+		err = router.RunTLS(":"+cfg.Port, cfg.TLSCertFile, cfg.TLSKeyFile)
+	} else {
+		log.Printf("Penates backend listening on port %s (HTTP)", cfg.Port)
+		err = router.Run(":" + cfg.Port)
+	}
+	if err != nil {
 		log.Fatalf("server exited: %v", err)
 	}
 }
@@ -56,8 +63,18 @@ func runHealthcheck() {
 	if port == "" {
 		port = "8080"
 	}
+
+	scheme := "http"
 	client := http.Client{Timeout: 3 * time.Second}
-	resp, err := client.Get(fmt.Sprintf("http://127.0.0.1:%s/healthz", port))
+	if os.Getenv("TLS_CERT_FILE") != "" && os.Getenv("TLS_KEY_FILE") != "" {
+		scheme = "https"
+		// The healthcheck talks to the server's own self-signed cert over
+		// loopback, so there's no third party to be fooled by skipping
+		// verification here.
+		client.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}} //nolint:gosec
+	}
+
+	resp, err := client.Get(fmt.Sprintf("%s://127.0.0.1:%s/healthz", scheme, port))
 	if err != nil || resp.StatusCode != http.StatusOK {
 		os.Exit(1)
 	}

@@ -24,6 +24,10 @@ type Config struct {
 	MaxUploadSizeMB        int64
 	LoginRateLimitAttempts int
 	LoginRateLimitWindow   time.Duration
+	// TLSCertFile and TLSKeyFile enable HTTPS when both are set; the server
+	// falls back to plain HTTP when either is empty (e.g. in tests).
+	TLSCertFile string
+	TLSKeyFile  string
 }
 
 func getEnv(key, fallback string) string {
@@ -81,6 +85,8 @@ func Load() (*Config, error) {
 		MaxUploadSizeMB:        maxUploadSizeMB,
 		LoginRateLimitAttempts: loginRateLimitAttempts,
 		LoginRateLimitWindow:   loginRateLimitWindow,
+		TLSCertFile:            getEnv("TLS_CERT_FILE", ""),
+		TLSKeyFile:             getEnv("TLS_KEY_FILE", ""),
 	}
 	return cfg, nil
 }

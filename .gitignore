@@ -44,6 +44,10 @@ backend/tmp/
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+# Locally-trusted dev TLS certs
+certs/*
+!certs/.gitkeep
+
 # Editor/IDE
 .vscode/
 .idea/

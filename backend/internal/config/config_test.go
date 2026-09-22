@@ -16,6 +16,7 @@ func clearEnv(t *testing.T) {
 		"CORS_ALLOWED_ORIGINS", "SEED_ADMIN_EMAIL", "SEED_ADMIN_PASSWORD",
 		"SEED_ADMIN_ORG", "UPLOAD_DIR", "MAX_UPLOAD_SIZE_MB",
 		"LOGIN_RATE_LIMIT_ATTEMPTS", "LOGIN_RATE_LIMIT_WINDOW",
+		"TLS_CERT_FILE", "TLS_KEY_FILE",
 	}
 	for _, k := range keys {
 		t.Setenv(k, "")
