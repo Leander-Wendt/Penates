@@ -36,29 +36,31 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <div
-    class="mx-auto flex max-w-sm flex-col gap-6 border-3 border-brut-black bg-brut-white p-6 shadow-brut"
-  >
-    <h1>{{ t('login.title') }}</h1>
-    <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
-      <BaseInput
-        v-model="form.email"
-        type="email"
-        :label="t('login.emailLabel')"
-        required
-        autocomplete="email"
-      />
-      <BaseInput
-        v-model="form.password"
-        type="password"
-        :label="t('login.passwordLabel')"
-        required
-        autocomplete="current-password"
-      />
-      <p v-if="errorMessage" role="alert" aria-live="assertive" class="font-bold text-brut-red">
-        {{ errorMessage }}
-      </p>
-      <BaseButton type="submit" :disabled="isSubmitting">{{ t('login.submit') }}</BaseButton>
-    </form>
+  <div class="flex min-h-[70vh] items-center justify-center">
+    <div
+      class="mx-auto flex w-full max-w-sm flex-col gap-6 border-3 border-brut-black bg-brut-white p-6 shadow-brut"
+    >
+      <h1>{{ t('login.title') }}</h1>
+      <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+        <BaseInput
+          v-model="form.email"
+          type="email"
+          :label="t('login.emailLabel')"
+          required
+          autocomplete="email"
+        />
+        <BaseInput
+          v-model="form.password"
+          type="password"
+          :label="t('login.passwordLabel')"
+          required
+          autocomplete="current-password"
+        />
+        <p v-if="errorMessage" role="alert" aria-live="assertive" class="font-bold text-brut-red">
+          {{ errorMessage }}
+        </p>
+        <BaseButton type="submit" :disabled="isSubmitting">{{ t('login.submit') }}</BaseButton>
+      </form>
+    </div>
   </div>
 </template>
