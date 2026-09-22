@@ -48,12 +48,13 @@ func NewRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	auth := middleware.RequireAuth(cfg.JWTSecret)
 	adminLogistics := middleware.RequireRoles(models.RoleAdmin, models.RoleLogistics)
 	adminOnly := middleware.RequireRoles(models.RoleAdmin)
+	loginRateLimiter := middleware.NewLoginRateLimiter(cfg.LoginRateLimitAttempts, cfg.LoginRateLimitWindow)
 
 	r.GET("/uploads/:filename", auth, uploadsHandler(cfg.UploadDir))
 
 	v1 := r.Group("/api/v1")
 	{
-		v1.POST("/auth/login", authHandler.Login)
+		v1.POST("/auth/login", loginRateLimiter.Middleware(), authHandler.Login)
 
 		organisations := v1.Group("/organisations", auth)
 		{
