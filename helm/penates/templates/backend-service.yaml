@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "penates.backendServiceName" . }}
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.backend.port }}
+      targetPort: {{ .Values.service.backend.targetPort }}
+      name: {{ .Values.service.backend.name }}
+      protocol: TCP
+  selector:
+    {{- include "penates.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: backend

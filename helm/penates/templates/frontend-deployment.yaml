@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "penates.frontendServiceName" . }}
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "penates.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: frontend
+  template:
+    metadata:
+      labels:
+        {{- include "penates.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: frontend
+      {{- with .Values.frontend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "penates.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: frontend
+          image: "{{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.frontend.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.frontend.targetPort }}
+              protocol: TCP
+          {{- with .Values.frontend.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+          {{- if .Values.frontend.healthCheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.frontend.healthCheck.path }}
+              port: {{ .Values.frontend.healthCheck.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.frontend.healthCheck.startPeriod | regexReplaceAll "s$" "" | int }}
+            periodSeconds: {{ regexReplaceAll "s$" "" .Values.frontend.healthCheck.interval | int }}
+            timeoutSeconds: {{ regexReplaceAll "s$" "" .Values.frontend.healthCheck.timeout | int }}
+            failureThreshold: {{ .Values.frontend.healthCheck.retries }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.frontend.healthCheck.path }}
+              port: {{ .Values.frontend.healthCheck.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.frontend.healthCheck.startPeriod | regexReplaceAll "s$" "" | int }}
+            periodSeconds: {{ regexReplaceAll "s$" "" .Values.frontend.healthCheck.interval | int }}
+            timeoutSeconds: {{ regexReplaceAll "s$" "" .Values.frontend.healthCheck.timeout | int }}
+            failureThreshold: {{ .Values.frontend.healthCheck.retries }}
+          {{- end }}
+      {{- with .Values.frontend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,13 @@
+{{- if .Values.postgres.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "penates.postgresServiceName" . }}-config
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+data:
+  {{- with .Values.postgres.config }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}

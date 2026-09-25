@@ -1,0 +1,119 @@
+{{- if .Values.postgres.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "penates.postgresServiceName" . }}
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  serviceName: {{ include "penates.postgresServiceName" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "penates.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "penates.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postgres
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "penates.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: postgres
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.service.postgres.targetPort }}
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.auth.username | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "penates.postgresSecretName" . }}
+                  key: {{ .Values.postgres.auth.secretKeys.adminPasswordKey | default "postgres-password" }}
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.auth.database | quote }}
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+          {{- if .Values.postgres.healthCheck.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - exec pg_isready -U "{{ .Values.postgres.auth.username }}" -d "{{ .Values.postgres.auth.database }}" -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: {{ regexReplaceAll "s$" "" .Values.postgres.healthCheck.interval | int }}
+            timeoutSeconds: {{ regexReplaceAll "s$" "" .Values.postgres.healthCheck.timeout | int }}
+            failureThreshold: {{ .Values.postgres.healthCheck.retries }}
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - exec pg_isready -U "{{ .Values.postgres.auth.username }}" -d "{{ .Values.postgres.auth.database }}" -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 5
+            periodSeconds: {{ regexReplaceAll "s$" "" .Values.postgres.healthCheck.interval | int }}
+            timeoutSeconds: {{ regexReplaceAll "s$" "" .Values.postgres.healthCheck.timeout | int }}
+            failureThreshold: {{ .Values.postgres.healthCheck.retries }}
+          {{- end }}
+          {{- with .Values.postgres.config }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "penates.postgresServiceName" . }}-config
+          {{- end }}
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: {{ include "penates.postgresServiceName" . }}-data
+  {{- if not .Values.postgres.persistence.enabled }}
+  volumeClaimTemplates: []
+  {{- else }}
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          {{- toYaml .Values.postgres.persistence.accessModes | nindent 10 }}
+        resources:
+          requests:
+            storage: {{ .Values.postgres.persistence.size | quote }}
+        {{- if .Values.postgres.persistence.storageClass }}
+        storageClassName: {{ .Values.postgres.persistence.storageClass | quote }}
+        {{- end }}
+        {{- with .Values.postgres.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+  {{- end }}
+  {{- with .Values.postgres.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.postgres.affinity }}
+  affinity:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.postgres.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+{{- end }}

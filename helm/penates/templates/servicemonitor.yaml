@@ -1,0 +1,20 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "penates.fullname" . }}
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    release: {{ .Release.Name }}
+spec:
+  endpoints:
+    - interval: {{ .Values.monitoring.serviceMonitor.interval }}
+      port: {{ .Values.service.backend.name }}
+      path: /healthz
+      scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+      scheme: http
+  selector:
+    matchLabels:
+      {{- include "penates.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+{{- end }}

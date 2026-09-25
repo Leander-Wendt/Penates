@@ -1,0 +1,655 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Penates Helm Chart Values Schema",
+  "description": "Schema for Penates Helm chart values.yaml",
+  "type": "object",
+  "properties": {
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "Override the full release name"
+    },
+    "replicaCount": {
+      "type": "integer",
+      "default": 1,
+      "description": "Default replica count"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "backend": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "ghcr.io/leander-wendt/penates-backend"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "default": "IfNotPresent",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            },
+            "tag": {
+              "type": "string",
+              "description": "Image tag override"
+            }
+          }
+        },
+        "frontend": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "ghcr.io/leander-wendt/penates-frontend"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "default": "IfNotPresent",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            },
+            "tag": {
+              "type": "string",
+              "description": "Image tag override"
+            }
+          }
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "properties": {
+        "fsGroup": {
+          "type": "integer"
+        }
+      }
+    },
+    "securityContext": {
+      "type": "object",
+      "properties": {
+        "capabilities": {
+          "type": "object"
+        },
+        "readOnlyRootFilesystem": {
+          "type": "boolean"
+        },
+        "runAsNonRoot": {
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "type": "integer"
+        },
+        "allowPrivilegeEscalation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "ClusterIP",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer"]
+        },
+        "backend": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": "integer",
+              "default": 8080
+            },
+            "targetPort": {
+              "type": "integer",
+              "default": 8080
+            },
+            "name": {
+              "type": "string",
+              "default": "http-backend"
+            }
+          }
+        },
+        "frontend": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": "integer",
+              "default": 80
+            },
+            "targetPort": {
+              "type": "integer",
+              "default": 80
+            },
+            "name": {
+              "type": "string",
+              "default": "http-frontend"
+            }
+          }
+        },
+        "postgres": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": "integer",
+              "default": 5432
+            },
+            "targetPort": {
+              "type": "integer",
+              "default": 5432
+            },
+            "name": {
+              "type": "string",
+              "default": "postgres"
+            }
+          }
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "className": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "pathType": {
+                      "type": "string",
+                      "default": "Prefix"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": {
+                "type": "string"
+              },
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "postgres": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "external": {
+          "type": "boolean",
+          "default": false
+        },
+        "externalHost": {
+          "type": "string"
+        },
+        "externalPort": {
+          "type": "integer",
+          "default": 5432
+        },
+        "externalUsername": {
+          "type": "string"
+        },
+        "externalPassword": {
+          "type": "string"
+        },
+        "externalDatabase": {
+          "type": "string"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "postgres"
+            },
+            "tag": {
+              "type": "string",
+              "default": "16-alpine"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string",
+              "default": "postgres"
+            },
+            "password": {
+              "type": "string",
+              "default": "postgres"
+            },
+            "database": {
+              "type": "string",
+              "default": "penates"
+            },
+            "existingSecret": {
+              "type": "string"
+            },
+            "secretKeys": {
+              "type": "object",
+              "properties": {
+                "adminPasswordKey": {
+                  "type": "string",
+                  "default": "postgres-password"
+                },
+                "userPasswordKey": {
+                  "type": "string",
+                  "default": "postgres-password"
+                }
+              }
+            }
+          }
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "storageClass": {
+              "type": "string"
+            },
+            "accessModes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ["ReadWriteOnce"]
+            },
+            "size": {
+              "type": "string",
+              "default": "8Gi"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "resources": {
+          "type": "object"
+        },
+        "config": {
+          "type": "object"
+        },
+        "healthCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "interval": {
+              "type": "string",
+              "default": "5s"
+            },
+            "timeout": {
+              "type": "string",
+              "default": "5s"
+            },
+            "retries": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        }
+      }
+    },
+    "backend": {
+      "type": "object",
+      "properties": {
+        "replicaCount": {
+          "type": "integer",
+          "default": 1
+        },
+        "resources": {
+          "type": "object"
+        },
+        "env": {
+          "type": "object"
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "storageClass": {
+              "type": "string"
+            },
+            "accessModes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "size": {
+              "type": "string",
+              "default": "1Gi"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "healthCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "path": {
+              "type": "string",
+              "default": "/healthz"
+            },
+            "port": {
+              "type": "integer",
+              "default": 8080
+            },
+            "interval": {
+              "type": "string",
+              "default": "10s"
+            },
+            "timeout": {
+              "type": "string",
+              "default": "5s"
+            },
+            "retries": {
+              "type": "integer",
+              "default": 5
+            },
+            "startPeriod": {
+              "type": "string",
+              "default": "10s"
+            }
+          }
+        },
+        "podAnnotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "nodeSelector": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tolerations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "affinity": {
+          "type": "object"
+        }
+      }
+    },
+    "frontend": {
+      "type": "object",
+      "properties": {
+        "replicaCount": {
+          "type": "integer",
+          "default": 1
+        },
+        "resources": {
+          "type": "object"
+        },
+        "env": {
+          "type": "object"
+        },
+        "healthCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "path": {
+              "type": "string",
+              "default": "/"
+            },
+            "port": {
+              "type": "integer",
+              "default": 80
+            },
+            "interval": {
+              "type": "string",
+              "default": "10s"
+            },
+            "timeout": {
+              "type": "string",
+              "default": "5s"
+            },
+            "retries": {
+              "type": "integer",
+              "default": 5
+            },
+            "startPeriod": {
+              "type": "string",
+              "default": "10s"
+            }
+          }
+        },
+        "podAnnotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "nodeSelector": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tolerations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "affinity": {
+          "type": "object"
+        }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "ingress": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "maxUnavailable": {
+          "type": "integer",
+          "default": 1
+        }
+      }
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "backend": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "minReplicas": {
+              "type": "integer",
+              "default": 1
+            },
+            "maxReplicas": {
+              "type": "integer",
+              "default": 3
+            },
+            "targetCPUUtilizationPercentage": {
+              "type": "integer",
+              "default": 80
+            },
+            "targetMemoryUtilizationPercentage": {
+              "type": "integer",
+              "default": 80
+            }
+          }
+        },
+        "frontend": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "minReplicas": {
+              "type": "integer",
+              "default": 1
+            },
+            "maxReplicas": {
+              "type": "integer",
+              "default": 3
+            },
+            "targetCPUUtilizationPercentage": {
+              "type": "integer",
+              "default": 80
+            },
+            "targetMemoryUtilizationPercentage": {
+              "type": "integer",
+              "default": 80
+            }
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "serviceMonitor": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "interval": {
+              "type": "string",
+              "default": "30s"
+            },
+            "scrapeTimeout": {
+              "type": "string",
+              "default": "10s"
+            }
+          }
+        }
+      }
+    }
+  }
+}

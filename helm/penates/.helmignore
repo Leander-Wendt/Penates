@@ -1,0 +1,49 @@
+# Patterns to ignore when packaging the chart
+# Use a leading slash to match relative to the chart directory
+
+# Files that should not be in the helm package
+.git
+.gitignore
+.gitmodules
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Editor backup files
+*.bak
+*.tmp
+
+# Test and documentation files
+README.md
+Makefile
+
+# Example values files (users should provide their own)
+values-dev.yaml
+values-staging.yaml
+values-prod.yaml
+
+# Chart development files
+*.yaml.bak
+*.yaml.old
+
+# Logs and temporary files
+*.log
+*.cache
+
+# Local configuration
+values.yaml.local
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+
+# Build outputs
+dist/
+bin/
+
+# Dependencies (handled by Chart.yaml dependencies)
+charts/

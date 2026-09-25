@@ -1,0 +1,79 @@
+# Development values for Penates
+# Use this for local development clusters like Minikube, Kind, or local Kubernetes
+
+nameOverride: "penates-dev"
+
+# Single replica for development
+replicaCount: 1
+
+# Use NodePort for easy access in development
+service:
+  type: NodePort
+  frontend:
+    port: 80
+    targetPort: 80
+    nodePort: 30080
+  backend:
+    port: 8080
+    targetPort: 8080
+    nodePort: 30081
+
+# Enable ingress for local development with host alias
+# Requires adding 'penates.local' to /etc/hosts pointing to cluster IP
+# ingress:
+#   enabled: true
+#   className: "nginx"
+#   hosts:
+#     - host: penates.local
+#       paths:
+#         - path: /
+#           pathType: Prefix
+
+# PostgreSQL configuration for development
+postgres:
+  enabled: true
+  auth:
+    username: postgres
+    password: dev-password
+    database: penates_dev
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+
+# Backend configuration for development
+backend:
+  replicaCount: 1
+  env:
+    ENV: development
+    JWT_SECRET: "dev-secret-change-in-production"
+    JWT_EXPIRY: "24h"
+    CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:5173,http://penates.local:30080"
+    SEED_ADMIN_EMAIL: "admin@penates.local"
+    SEED_ADMIN_PASSWORD: "admin123"
+    SEED_ADMIN_ORG: "Dev Organisation"
+  persistence:
+    size: 500Mi
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+
+# Frontend configuration for development
+frontend:
+  replicaCount: 1
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 25m
+
+# Monitoring disabled in development
+monitoring:
+  enabled: false
+
+# Autoscaling disabled in development
+autoscaling:
+  enabled: false

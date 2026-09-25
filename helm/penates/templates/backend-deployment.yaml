@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "penates.backendServiceName" . }}
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "penates.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "penates.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+      {{- with .Values.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "penates.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: backend
+          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.backend.targetPort }}
+              protocol: TCP
+          env:
+            - name: ENV
+              value: {{ .Values.backend.env.ENV | quote }}
+            - name: PORT
+              value: {{ .Values.backend.env.PORT | quote }}
+            - name: DATABASE_URL
+              value: {{ include "penates.databaseURL" . | quote }}
+            - name: JWT_SECRET
+              value: {{ .Values.backend.env.JWT_SECRET | quote }}
+            - name: JWT_EXPIRY
+              value: {{ .Values.backend.env.JWT_EXPIRY | quote }}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ .Values.backend.env.CORS_ALLOWED_ORIGINS | quote }}
+            - name: SEED_ADMIN_EMAIL
+              value: {{ .Values.backend.env.SED_ADMIN_EMAIL | default .Values.backend.env.SeedAdminEmail | quote }}
+            - name: SEED_ADMIN_PASSWORD
+              value: {{ .Values.backend.env.SEED_ADMIN_PASSWORD | default .Values.backend.env.SeedAdminPassword | quote }}
+            - name: SEED_ADMIN_ORG
+              value: {{ .Values.backend.env.SED_ADMIN_ORG | default .Values.backend.env.SeedAdminOrg | quote }}
+            - name: UPLOAD_DIR
+              value: /app/uploads
+            - name: MAX_UPLOAD_SIZE_MB
+              value: {{ .Values.backend.env.MAX_UPLOAD_SIZE_MB | quote }}
+            - name: LOGIN_RATE_LIMIT_ATTEMPTS
+              value: {{ .Values.backend.env.LOGIN_RATE_LIMIT_ATTEMPTS | quote }}
+            - name: LOGIN_RATE_LIMIT_WINDOW
+              value: {{ .Values.backend.env.LOGIN_RATE_LIMIT_WINDOW | quote }}
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          {{- if .Values.backend.healthCheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.healthCheck.path }}
+              port: {{ .Values.backend.healthCheck.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.backend.healthCheck.startPeriod | regexReplaceAll "s$" "" | int }}
+            periodSeconds: {{ regexReplaceAll "s$" "" .Values.backend.healthCheck.interval | int }}
+            timeoutSeconds: {{ regexReplaceAll "s$" "" .Values.backend.healthCheck.timeout | int }}
+            failureThreshold: {{ .Values.backend.healthCheck.retries }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.healthCheck.path }}
+              port: {{ .Values.backend.healthCheck.port }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.backend.healthCheck.startPeriod | regexReplaceAll "s$" "" | int }}
+            periodSeconds: {{ regexReplaceAll "s$" "" .Values.backend.healthCheck.interval | int }}
+            timeoutSeconds: {{ regexReplaceAll "s$" "" .Values.backend.healthCheck.timeout | int }}
+            failureThreshold: {{ .Values.backend.healthCheck.retries }}
+          {{- end }}
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: {{ include "penates.backendServiceName" . }}-uploads
+      {{- with .Values.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

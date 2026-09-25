@@ -1,0 +1,273 @@
+# Default values for penates.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+nameOverride: ""
+fullnameOverride: ""
+
+# Kubernetes deployment settings
+replicaCount: 1
+
+image:
+  # Backend image settings
+  backend:
+    repository: ghcr.io/leander-wendt/penates-backend
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+  
+  # Frontend image settings
+  frontend:
+    repository: ghcr.io/leander-wendt/penates-frontend
+    pullPolicy: IfNotPresent
+    tag: ""
+
+imagePullSecrets: []
+
+# Service account configuration
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 2000
+
+# Security context for containers
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+
+# Service configuration
+service:
+  type: ClusterIP
+  backend:
+    port: 8080
+    targetPort: 8080
+    name: http-backend
+  frontend:
+    port: 80
+    targetPort: 80
+    name: http-frontend
+  postgres:
+    port: 5432
+    targetPort: 5432
+    name: postgres
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: penates.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service:
+            name: frontend
+            port: http-frontend
+  tls: []
+  #  - secretName: penates-tls
+  #    hosts:
+  #      - penates.example.com
+
+# PostgreSQL configuration
+postgres:
+  enabled: true
+  # Use external PostgreSQL if enabled: false and provide connection details
+  external: false
+  externalHost: ""
+  externalPort: 5432
+  externalUsername: ""
+  externalPassword: ""
+  externalDatabase: ""
+  
+  # Internal PostgreSQL settings
+  image:
+    repository: postgres
+    tag: "16-alpine"
+    pullPolicy: IfNotPresent
+  
+  # PostgreSQL authentication
+  auth:
+    username: postgres
+    password: postgres
+    database: penates
+    # Existing secret to use for PostgreSQL credentials
+    existingSecret: ""
+    # Secret key names
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+      userPasswordKey: "postgres-password"
+  
+  # PostgreSQL persistence
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    annotations: {}
+  
+  # PostgreSQL resource requests and limits
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  
+  # PostgreSQL configuration
+  config:
+    # PostgreSQL configuration parameters
+    sharedBuffers: "128MB"
+    maxConnections: "100"
+  
+  # PostgreSQL health check
+  healthCheck:
+    enabled: true
+    interval: 5s
+    timeout: 5s
+    retries: 10
+
+# Backend configuration
+backend:
+  # Backend replica count
+  replicaCount: 1
+  
+  # Backend resource requests and limits
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  
+  # Backend environment variables
+  env:
+    ENV: production
+    PORT: "8080"
+    JWT_SECRET: "change-me-to-a-long-random-secret"
+    JWT_EXPIRY: "24h"
+    CORS_ALLOWED_ORIGINS: "https://localhost:3000"
+    SEED_ADMIN_EMAIL: "admin@penates.local"
+    SEED_ADMIN_PASSWORD: "change-me-to-a-strong-password"
+    SEED_ADMIN_ORG: "Default"
+    MAX_UPLOAD_SIZE_MB: "10"
+    LOGIN_RATE_LIMIT_ATTEMPTS: "5"
+    LOGIN_RATE_LIMIT_WINDOW: "1m"
+  
+  # Backend persistence for uploads
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    annotations: {}
+  
+  # Backend health check
+  healthCheck:
+    enabled: true
+    path: /healthz
+    port: 8080
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    startPeriod: 10s
+  
+  # Backend pod annotations
+  podAnnotations: {}
+  
+  # Backend node selector
+  nodeSelector: {}
+  
+  # Backend tolerations
+  tolerations: []
+  
+  # Backend affinity
+  affinity: {}
+
+# Frontend configuration
+frontend:
+  # Frontend replica count
+  replicaCount: 1
+  
+  # Frontend resource requests and limits
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+  
+  # Frontend environment variables
+  env: {}
+  
+  # Frontend health check
+  healthCheck:
+    enabled: true
+    path: /
+    port: 80
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    startPeriod: 10s
+  
+  # Frontend pod annotations
+  podAnnotations: {}
+  
+  # Frontend node selector
+  nodeSelector: {}
+  
+  # Frontend tolerations
+  tolerations: []
+  
+  # Frontend affinity
+  affinity: {}
+
+# Network policy configuration
+networkPolicy:
+  enabled: false
+  ingress:
+    - from: []
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+  maxUnavailable: 1
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+  backend:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  frontend:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+# Monitoring configuration
+monitoring:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    scrapeTimeout: 10s

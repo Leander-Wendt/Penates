@@ -1,0 +1,68 @@
+## Penates Inventory Management System
+
+Thank you for installing Penates! 
+
+### Post-Installation Steps
+
+1. **Access the Application**:
+   - If you enabled ingress, access Penates at: {{ if .Values.ingress.enabled }}{{ range .Values.ingress.hosts }}{{ if .host }}https://{{ .host }}{{ end }}{{ end }}{{ else }}http://<service-ip>:{{ .Values.service.frontend.port }}{{ end }}
+
+2. **Default Credentials**:
+   - Admin Email: {{ .Values.backend.env.SeedAdminEmail | default "admin@penates.local" }}
+   - Admin Password: {{ .Values.backend.env.SeedAdminPassword | default "change-me-to-a-strong-password" }}
+   - Organisation: {{ .Values.backend.env.SeedAdminOrg | default "Default" }}
+
+3. **Important Security Note**:
+   - Please change the JWT_SECRET and all default passwords immediately!
+   - The JWT_SECRET is currently: {{ .Values.backend.env.JWT_SECRET }}
+   - PostgreSQL password: {{ .Values.postgres.auth.password }}
+
+4. **Check Pod Status**:
+   ```
+   kubectl get pods -l app.kubernetes.io/name={{ include "penates.name" . }}
+   ```
+
+5. **Check Services**:
+   ```
+   kubectl get svc -l app.kubernetes.io/name={{ include "penates.name" . }}
+   ```
+
+6. **Access PostgreSQL** (if enabled):
+   ```
+   kubectl exec -it deploy/{{ include "penates.postgresServiceName" . }} -- psql -U {{ .Values.postgres.auth.username }} -d {{ .Values.postgres.auth.database }}
+   ```
+
+7. **View Logs**:
+   ```
+   kubectl logs -l app.kubernetes.io/component=backend
+   kubectl logs -l app.kubernetes.io/component=frontend
+   ```
+
+### Configuration Options
+
+To customize your deployment, you can override values in the values.yaml file:
+- Database settings (PostgreSQL configuration)
+- Ingress configuration (hosts, TLS)
+- Resource limits and requests
+- Autoscaling settings
+- Environment variables for backend and frontend
+
+### Upgrading
+
+To upgrade your deployment with new values:
+```
+helm upgrade penates . -f your-values.yaml
+```
+
+### Uninstalling
+
+To uninstall the chart:
+```
+helm uninstall penates
+```
+
+This will remove all Kubernetes resources but preserve persistent volumes.
+To also remove the PVCs, use:
+```
+helm uninstall penates --preserve-pvc=false
+```

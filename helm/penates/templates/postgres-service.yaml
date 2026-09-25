@@ -1,0 +1,19 @@
+{{- if .Values.postgres.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "penates.postgresServiceName" . }}
+  labels:
+    {{- include "penates.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.postgres.port }}
+      targetPort: {{ .Values.service.postgres.targetPort }}
+      name: {{ .Values.service.postgres.name }}
+      protocol: TCP
+  selector:
+    {{- include "penates.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+{{- end }}
