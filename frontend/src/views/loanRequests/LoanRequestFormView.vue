@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import LoanRequestForm from '@/components/loanRequests/LoanRequestForm.vue'
 import { useItemsStore } from '@/stores/items'
@@ -13,12 +13,26 @@ import type { LoanRequestCreateInput } from '@/types'
  * available items and submit a request for approval.
  */
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const itemsStore = useItemsStore()
 const loanRequestsStore = useLoanRequestsStore()
 
+// Get pre-selected items from query parameters
+const preSelectedItems = ref<string[]>([])
+
 onMounted(() => {
   itemsStore.fetchAll()
+
+  // Check for pre-selected items in query params
+  const itemsQuery = route.query.items
+  if (itemsQuery) {
+    if (Array.isArray(itemsQuery)) {
+      preSelectedItems.value = itemsQuery
+    } else {
+      preSelectedItems.value = itemsQuery.split(',').filter(Boolean)
+    }
+  }
 })
 
 async function handleSubmit(input: LoanRequestCreateInput): Promise<void> {
@@ -34,6 +48,11 @@ function handleCancel(): void {
 <template>
   <div class="flex flex-col gap-4">
     <h1>{{ t('loanRequests.createTitle') }}</h1>
-    <LoanRequestForm :items="itemsStore.items" @submit="handleSubmit" @cancel="handleCancel" />
+    <LoanRequestForm
+      :items="itemsStore.items"
+      :pre-selected-items="preSelectedItems"
+      @submit="handleSubmit"
+      @cancel="handleCancel"
+    />
   </div>
 </template>

@@ -38,6 +38,7 @@
     "amount": "Anzahl",
     "note": "Notiz",
     "status": "Status",
+    "select": "Auswählen",
     "uploadImage": "Bild hochladen",
     "removeImage": "Bild entfernen",
     "changeImage": "Bild ändern"
@@ -88,7 +89,10 @@
     "price": "Preis",
     "resolutionNumber": "Beschlussnummer",
     "thumbnailAlt": "Foto von {name}",
-    "noImage": "Kein Bild"
+    "noImage": "Kein Bild",
+    "viewToggleLabel": "Ansicht",
+    "cardView": "Karten",
+    "listView": "Liste"
   },
   "users": {
     "title": "Benutzer",

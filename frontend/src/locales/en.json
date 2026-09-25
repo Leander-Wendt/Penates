@@ -38,6 +38,7 @@
     "amount": "Amount",
     "note": "Note",
     "status": "Status",
+    "select": "Select",
     "uploadImage": "Upload image",
     "removeImage": "Remove image",
     "changeImage": "Change image"
@@ -88,7 +89,10 @@
     "price": "Price",
     "resolutionNumber": "Resolution number",
     "thumbnailAlt": "Photo of {name}",
-    "noImage": "No image"
+    "noImage": "No image",
+    "viewToggleLabel": "View as",
+    "cardView": "Cards",
+    "listView": "List"
   },
   "users": {
     "title": "Users",

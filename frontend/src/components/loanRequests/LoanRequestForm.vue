@@ -12,13 +12,16 @@ import type { Item, LoanRequestCreateInput } from '@/types'
  * dates, and a location. Available items to choose from are supplied by
  * the parent view.
  */
-const props = defineProps<{ items: Item[] }>()
+const props = defineProps<{
+  items: Item[]
+  preSelectedItems?: string[]
+}>()
 const emit = defineEmits<{ submit: [input: LoanRequestCreateInput]; cancel: [] }>()
 
 const { t } = useI18n()
 
 const form = reactive({
-  itemInventoryNumbers: [] as string[],
+  itemInventoryNumbers: props.preSelectedItems || ([] as string[]),
   dateOfLending: '',
   dateOfReturn: '',
   locationOfItems: '',
