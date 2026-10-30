@@ -3,6 +3,9 @@
     "name": "Penates",
     "skipToContent": "Skip to main content"
   },
+  "footer": {
+    "githubLink": "GitHub repository"
+  },
   "nav": {
     "items": "Items",
     "loanRequests": "Loan Requests",
@@ -58,7 +61,10 @@
     "title": "Log in",
     "submit": "Log in",
     "emailLabel": "Email address",
-    "passwordLabel": "Password"
+    "passwordLabel": "Password",
+    "or": "or",
+    "ssoButton": "Sign in with SSO",
+    "ssoUnavailable": "Single Sign-On is not available"
   },
   "forbidden": {
     "title": "Not permitted",
