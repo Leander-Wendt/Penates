@@ -7,12 +7,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/Leander-Wendt/Penates/backend/internal/models"
 	"github.com/Leander-Wendt/Penates/backend/internal/service"
 )
 
 // AuthService defines the operations AuthHandler needs from the service layer.
 type AuthService interface {
 	Login(email, password string) (string, time.Time, error)
+	FindOrCreateSSOUser(provider, sub, email, name string) (*models.User, error)
 }
 
 // AuthHandler exposes HTTP handlers for authentication.

@@ -61,3 +61,12 @@ func (m *UserRepository) Count() (int64, error) {
 	args := m.Called()
 	return args.Get(0).(int64), args.Error(1)
 }
+
+// FindBySSOSub records a call to FindBySSOSub.
+func (m *UserRepository) FindBySSOSub(provider, sub string) (*models.User, error) {
+	args := m.Called(provider, sub)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*models.User), args.Error(1)
+}

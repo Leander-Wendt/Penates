@@ -120,6 +120,15 @@ func (m *AuthService) Login(email, password string) (string, time.Time, error) {
 	return args.String(0), expiresAt, args.Error(2)
 }
 
+// FindOrCreateSSOUser records a call to FindOrCreateSSOUser.
+func (m *AuthService) FindOrCreateSSOUser(provider, sub, email, name string) (*models.User, error) {
+	args := m.Called(provider, sub, email, name)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*models.User), args.Error(1)
+}
+
 // ItemService is a testify mock implementing the handler package's ItemService interface.
 type ItemService struct {
 	mock.Mock

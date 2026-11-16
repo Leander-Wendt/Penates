@@ -90,6 +90,20 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => token.value !== null)
 
   /**
+   * Set token and expiry directly (used for SSO callback).
+   * Initializes role and userId from the token claims.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function setToken(newToken: string, newExpiresAt: string): void {
+    const claims = decodeTokenClaims(newToken)
+    token.value = newToken
+    expiresAt.value = newExpiresAt
+    role.value = claims.role ?? null
+    userId.value = claims.sub ?? null
+    saveToStorage(newToken, newExpiresAt)
+  }
+
+  /**
    * Authenticates against the backend and, on success, populates the
    * session and persists it to localStorage. On failure, clears any
    * potentially stale auth data.

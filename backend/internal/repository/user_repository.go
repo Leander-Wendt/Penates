@@ -11,6 +11,7 @@ type UserRepository interface {
 	Create(user *models.User) error
 	FindByID(id uint) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
+	FindBySSOSub(provider, sub string) (*models.User, error)
 	FindAll() ([]models.User, error)
 	Update(user *models.User) error
 	Delete(id uint) error
@@ -74,4 +75,13 @@ func (r *GormUserRepository) Count() (int64, error) {
 	var count int64
 	err := r.db.Model(&models.User{}).Count(&count).Error
 	return count, err
+}
+
+// FindBySSOSub looks up a User by their SSO provider and subject identifier.
+func (r *GormUserRepository) FindBySSOSub(provider, sub string) (*models.User, error) {
+	var user models.User
+	if err := r.db.Preload("Organisation").Where("sso_provider = ? AND sso_sub = ?", provider, sub).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

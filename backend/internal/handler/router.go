@@ -31,7 +31,17 @@ func NewRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 
 	orgSvc := service.NewOrganisationService(orgRepo)
 	userSvc := service.NewUserService(userRepo)
-	authSvc := service.NewAuthService(userRepo, cfg.JWTSecret, cfg.JWTExpiry)
+
+	// SSO/OIDC configuration
+	ssoConfig := &service.SSOConfig{
+		Enabled:        cfg.SSOEnabled,
+		DefaultRole:    models.Role(cfg.SSODefaultRole),
+		AllowedDomains: cfg.SSOAllowedDomains,
+	}
+
+	// Create auth service with SSO support
+	authSvc := service.NewAuthService(userRepo, orgRepo, cfg.JWTSecret, cfg.JWTExpiry, ssoConfig)
+
 	itemSvc := service.NewItemService(itemRepo)
 	loanRequestSvc := service.NewLoanRequestService(loanRequestRepo)
 	uploadSvc := service.NewUploadService(itemRepo, cfg.UploadDir, cfg.MaxUploadSizeMB)
@@ -39,6 +49,27 @@ func NewRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	orgHandler := NewOrganisationHandler(orgSvc)
 	userHandler := NewUserHandler(userSvc)
 	authHandler := NewAuthHandler(authSvc)
+
+	// OAuth handler for SSO (only created if SSO is configured)
+	var oauthHandler *OAuthHandler
+	if cfg.SSOEnabled && cfg.SSOProviderURL != "" && cfg.SSOClientID != "" && cfg.SSOClientSecret != "" {
+		oauthHandler = NewOAuthHandler(
+			authSvc,
+			cfg.JWTSecret,
+			cfg.JWTExpiry,
+			OAuthConfig{
+				ProviderURL:         cfg.SSOProviderURL,
+				ClientID:            cfg.SSOClientID,
+				ClientSecret:        cfg.SSOClientSecret,
+				RedirectURL:         cfg.SSORedirectURL,
+				FrontendCallbackURL: cfg.SSOFrontendCallbackURL,
+				Scopes:              cfg.SSOScopes,
+				AllowedDomains:      cfg.SSOAllowedDomains,
+				DefaultRole:         cfg.SSODefaultRole,
+			},
+		)
+	}
+
 	itemHandler := NewItemHandler(itemSvc)
 	loanRequestHandler := NewLoanRequestHandler(loanRequestSvc)
 	uploadHandler := NewUploadHandler(uploadSvc)
@@ -55,6 +86,13 @@ func NewRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	v1 := r.Group("/api/v1")
 	{
 		v1.POST("/auth/login", loginRateLimiter.Middleware(), authHandler.Login)
+
+		// SSO routes (only available if SSO is enabled)
+		if oauthHandler != nil {
+			v1.GET("/auth/oauth/redirect", oauthHandler.Redirect)
+			v1.GET("/auth/oauth/callback", oauthHandler.Callback)
+			v1.GET("/auth/oauth/config", oauthHandler.GetConfig)
+		}
 
 		organisations := v1.Group("/organisations", auth)
 		{

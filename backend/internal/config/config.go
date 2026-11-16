@@ -28,6 +28,16 @@ type Config struct {
 	// falls back to plain HTTP when either is empty (e.g. in tests).
 	TLSCertFile string
 	TLSKeyFile  string
+	// SSO configuration - all OIDC settings are optional to allow disabling SSO
+	SSOEnabled             bool
+	SSOProviderURL         string   // OIDC provider discovery URL (e.g., https://authentik.example.com/application/o/penates/.well-known/openid-configuration)
+	SSOClientID            string   // OIDC client ID
+	SSOClientSecret        string   // OIDC client secret
+	SSORedirectURL         string   // Backend callback URL (e.g., https://penates.example.com/api/v1/auth/oauth/callback)
+	SSOFrontendCallbackURL string   // Frontend URL to redirect to after auth (e.g., https://penates.example.com/login)
+	SSOScopes              []string // Requested scopes (e.g., openid,email,profile)
+	SSOAllowedDomains      []string // Allowed email domains for SSO users
+	SSODefaultRole         string   // Default role for new SSO users (admin, logistics, student)
 }
 
 func getEnv(key, fallback string) string {
@@ -71,6 +81,27 @@ func Load() (*Config, error) {
 		}
 	}
 
+	// SSO configuration
+	ssoEnabled, err := strconv.ParseBool(getEnv("SSO_ENABLED", "false"))
+	if err != nil {
+		return nil, err
+	}
+
+	var ssoScopes []string
+	if raw := getEnv("SSO_SCOPES", "openid,email,profile"); raw != "" {
+		ssoScopes = strings.Split(raw, ",")
+		for i, scope := range ssoScopes {
+			ssoScopes[i] = strings.TrimSpace(scope)
+		}
+	}
+
+	var ssoAllowedDomains []string
+	if raw := getEnv("SSO_ALLOWED_DOMAINS", ""); raw != "" {
+		for _, d := range strings.Split(raw, ",") {
+			ssoAllowedDomains = append(ssoAllowedDomains, strings.TrimSpace(d))
+		}
+	}
+
 	cfg := &Config{
 		Env:                    env,
 		Port:                   getEnv("PORT", "8080"),
@@ -87,6 +118,15 @@ func Load() (*Config, error) {
 		LoginRateLimitWindow:   loginRateLimitWindow,
 		TLSCertFile:            getEnv("TLS_CERT_FILE", ""),
 		TLSKeyFile:             getEnv("TLS_KEY_FILE", ""),
+		SSOEnabled:             ssoEnabled,
+		SSOProviderURL:         getEnv("SSO_PROVIDER_URL", ""),
+		SSOClientID:            getEnv("SSO_CLIENT_ID", ""),
+		SSOClientSecret:        getEnv("SSO_CLIENT_SECRET", ""),
+		SSORedirectURL:         getEnv("SSO_REDIRECT_URL", ""),
+		SSOFrontendCallbackURL: getEnv("SSO_FRONTEND_CALLBACK_URL", ""),
+		SSOScopes:              ssoScopes,
+		SSOAllowedDomains:      ssoAllowedDomains,
+		SSODefaultRole:         getEnv("SSO_DEFAULT_ROLE", "student"),
 	}
 	return cfg, nil
 }

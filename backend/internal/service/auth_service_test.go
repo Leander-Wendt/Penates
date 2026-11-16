@@ -19,8 +19,11 @@ func TestAuthService_Login_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	repo := new(mocks.UserRepository)
+	orgRepo := new(mocks.OrganisationRepository)
+	ssoConfig := &service.SSOConfig{Enabled: false}
+
 	repo.On("FindByEmail", "user@example.com").Return(&models.User{ID: 1, Email: "user@example.com", PasswordHash: hash, Role: models.RoleStudent}, nil)
-	svc := service.NewAuthService(repo, "test-secret", time.Hour)
+	svc := service.NewAuthService(repo, orgRepo, "test-secret", time.Hour, ssoConfig)
 
 	token, expiresAt, err := svc.Login("user@example.com", "correct-password")
 	require.NoError(t, err)
@@ -33,8 +36,11 @@ func TestAuthService_Login_WrongPassword(t *testing.T) {
 	require.NoError(t, err)
 
 	repo := new(mocks.UserRepository)
+	orgRepo := new(mocks.OrganisationRepository)
+	ssoConfig := &service.SSOConfig{Enabled: false}
+
 	repo.On("FindByEmail", "user@example.com").Return(&models.User{ID: 1, Email: "user@example.com", PasswordHash: hash, Role: models.RoleStudent}, nil)
-	svc := service.NewAuthService(repo, "test-secret", time.Hour)
+	svc := service.NewAuthService(repo, orgRepo, "test-secret", time.Hour, ssoConfig)
 
 	_, _, err = svc.Login("user@example.com", "wrong-password")
 	assert.ErrorIs(t, err, service.ErrInvalidCredentials)
@@ -42,8 +48,11 @@ func TestAuthService_Login_WrongPassword(t *testing.T) {
 
 func TestAuthService_Login_UnknownEmail(t *testing.T) {
 	repo := new(mocks.UserRepository)
+	orgRepo := new(mocks.OrganisationRepository)
+	ssoConfig := &service.SSOConfig{Enabled: false}
+
 	repo.On("FindByEmail", "missing@example.com").Return(nil, gorm.ErrRecordNotFound)
-	svc := service.NewAuthService(repo, "test-secret", time.Hour)
+	svc := service.NewAuthService(repo, orgRepo, "test-secret", time.Hour, ssoConfig)
 
 	_, _, err := svc.Login("missing@example.com", "whatever")
 	assert.ErrorIs(t, err, service.ErrInvalidCredentials)

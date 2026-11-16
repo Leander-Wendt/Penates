@@ -22,6 +22,17 @@ export function useAuth() {
     return roles.includes(role.value)
   }
 
+  /**
+   * Redirects to the SSO provider for authentication.
+   * This will navigate away from the app to the OIDC provider.
+   */
+  function loginWithSSO(): void {
+    // Get the SSO redirect URL from the backend config
+    const apiBase = import.meta.env.VITE_API_PROXY_TARGET || ''
+    const redirectUrl = `${apiBase}/api/v1/auth/oauth/redirect`
+    window.location.href = redirectUrl
+  }
+
   return {
     isAuthenticated,
     role,
@@ -29,6 +40,8 @@ export function useAuth() {
     token,
     hasRole,
     login: authStore.login,
+    loginWithSSO,
+    setToken: authStore.setToken,
     logout: authStore.clear,
   }
 }
